@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Captain's Table</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Trajan+Pro:wght@400;700&family=Cinzel:wght@400;500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --maroon: #4A0A0C;
+    --maroon-deep: #2E0608;
+    --maroon-mid: #5E0E10;
+    --gold: #D4A52C;
+    --gold-pale: #E8C96A;
+    --gold-dim: #9C7820;
+    --cream: #F5EDD8;
+    --cream-dark: #D9CEBC;
+    --ink: #1A0405;
+    --text-body: #C8B89A;
+    --text-dim: #8A7560;
+    --rule: rgba(212, 165, 44, 0.25);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--maroon-deep);
+    color: var(--text-body);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.75;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* Noise texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.5;
+  }
+
+  /* ─── NAVIGATION ─── */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 4rem;
+    background: linear-gradient(to bottom, rgba(30,4,6,0.95) 0%, transparent 100%);
+  }
+
+  nav .wordmark {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.35em;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+  }
+
+  nav .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  nav .nav-links a {
+    font-family: 'Cinzel', serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    color: var(--text-dim);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+
+  nav .nav-links a:hover { color: var(--gold); }
+
+  /* ─── HERO ─── */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 0 4rem 0 8rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 60% 80% at 80% 50%, rgba(74,10,12,0.3) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 20% 80%, rgba(212,165,44,0.04) 0%, transparent 60%);
+  }
+
+  .hero-rule-top {
+    width: 1px;
+    height: 120px;
+    background: linear-gradient(to bottom, transparent, var(--gold-dim));
+    margin-bottom: 3rem;
+    animation: fadeInDown 1.2s ease both 0.3s;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.5em;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    animation: fadeInUp 1s ease both 0.6s;
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3.5rem, 8vw, 7rem);
+    font-weight: 300;
+    line-height: 1.05;
+    color: var(--cream);
+    margin-bottom: 0.5rem;
+    animation: fadeInUp 1s ease both 0.4s;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--gold-pale);
+  }
+
+  .hero-subtitle {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.4em;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+    margin-bottom: 3rem;
+    animation: fadeInUp 1s ease both 0.7s;
+  }
+
+  .hero-desc {
+    max-width: 420px;
+    font-size: 1.05rem;
+    color: var(--text-body);
+    font-style: italic;
+    line-height: 1.8;
+    border-left: 1px solid var(--rule);
+    padding-left: 1.5rem;
+    animation: fadeInUp 1s ease both 0.9s;
+  }
+
+  .hero-corner-ornament {
+    position: absolute;
+    bottom: 4rem;
+    right: 4rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.55rem;
+    letter-spacing: 0.4em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    writing-mode: vertical-rl;
+    animation: fadeIn 1.5s ease both 1.8s;
+  }
+
+  /* ─── SECTION COMMONS ─── */
+  .section {
+    padding: 8rem 0;
+    position: relative;
+  }
+
+  .section-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 4rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 4rem;
+  }
+
+  .section-numeral {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 4rem;
+    font-weight: 300;
+    color: rgba(212,165,44,0.12);
+    line-height: 1;
+    flex-shrink: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .section-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.5em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-weight: 300;
+    color: var(--cream);
+    line-height: 1.1;
+  }
+
+  .section-divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, var(--gold-dim), transparent);
+    margin-bottom: 3rem;
+    opacity: 0.3;
+  }
+
+  .body-text {
+    font-size: 1.05rem;
+    line-height: 1.9;
+    color: var(--text-body);
+    max-width: 620px;
+  }
+
+  .body-text + .body-text {
+    margin-top: 1.5rem;
+  }
+
+  /* Alternating section backgrounds */
+  .section:nth-child(even) {
+    background: rgba(0,0,0,0.15);
+  }
+
+  /* ─── PHILOSOPHY ─── */
+  #philosophy .body-text {
+    font-style: italic;
+    font-size: 1.15rem;
+  }
+
+  /* ─── POSITION ─── */
+  #position .position-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  #position .negations {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    border-left: 1px solid var(--rule);
+    padding-left: 2rem;
+    margin-top: 0.5rem;
+  }
+
+  #position .negations li {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.95rem;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+    position: relative;
+  }
+
+  #position .negations li::before {
+    content: '—';
+    position: absolute;
+    left: -1.5rem;
+    color: var(--gold-dim);
+    opacity: 0.5;
+  }
+
+  /* ─── ENGINE ─── */
+  #engine .engine-quote {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--cream);
+    line-height: 1.4;
+    border-left: 2px solid var(--gold-dim);
+    padding-left: 2rem;
+    margin-bottom: 3rem;
+    max-width: 600px;
+  }
+
+  /* ─── STRUCTURE ─── */
+  #structure .structure-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  #structure .structure-item {
+    display: flex;
+    align-items: baseline;
+    gap: 2rem;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid rgba(212,165,44,0.1);
+  }
+
+  #structure .structure-item:first-child {
+    border-top: 1px solid rgba(212,165,44,0.1);
+  }
+
+  #structure .item-dot {
+    width: 4px;
+    height: 4px;
+    background: var(--gold);
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-bottom: 2px;
+    opacity: 0.6;
+  }
+
+  #structure .item-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem;
+    font-weight: 400;
+    color: var(--cream-dark);
+    letter-spacing: 0.03em;
+  }
+
+  /* ─── ENTRY ─── */
+  #entry {
+    background: var(--maroon-deep);
+    border-top: 1px solid rgba(212,165,44,0.1);
+  }
+
+  #entry .entry-inner {
+    text-align: center;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  #entry .entry-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 300;
+    color: var(--cream);
+    margin-bottom: 1.5rem;
+    line-height: 1.1;
+  }
+
+  #entry .entry-sub {
+    font-family: 'Cinzel', serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.4em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 3rem;
+  }
+
+  #entry .entry-email {
+    display: inline-block;
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-decoration: none;
+    text-transform: lowercase;
+    border-bottom: 1px solid rgba(212,165,44,0.3);
+    padding-bottom: 0.25rem;
+    transition: color 0.3s, border-color 0.3s;
+  }
+
+  #entry .entry-email:hover {
+    color: var(--gold-pale);
+    border-color: var(--gold-pale);
+  }
+
+  #entry .entry-ornament {
+    margin: 3rem auto 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    opacity: 0.3;
+  }
+
+  #entry .ornament-line {
+    width: 60px;
+    height: 1px;
+    background: var(--gold-dim);
+  }
+
+  #entry .ornament-diamond {
+    width: 5px;
+    height: 5px;
+    background: var(--gold-dim);
+    transform: rotate(45deg);
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    padding: 2rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(212,165,44,0.1);
+  }
+
+  footer span {
+    font-family: 'Cinzel', serif;
+    font-size: 0.55rem;
+    letter-spacing: 0.3em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  /* ─── SCROLL REVEAL ─── */
+  .reveal {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.9s ease, transform 0.9s ease;
+  }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    nav { padding: 1.25rem 1.5rem; }
+    nav .nav-links { display: none; }
+    #hero { padding: 0 1.5rem 0 1.5rem; min-height: 100svh; }
+    .section-inner { padding: 0 1.5rem; }
+    #position .position-grid { grid-template-columns: 1fr; gap: 2rem; }
+    footer { flex-direction: column; gap: 1rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="wordmark">The Captain's Table</span>
+  <ul class="nav-links">
+    <li><a href="#philosophy">Philosophy</a></li>
+    <li><a href="#position">Position</a></li>
+    <li><a href="#engine">The Engine</a></li>
+    <li><a href="#structure">Structure</a></li>
+    <li><a href="#entry">Entry</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-rule-top"></div>
+  <h1 class="hero-title">The Captain's<br><em>Table</em></h1>
+  <p class="hero-eyebrow" style="margin-top: 1.5rem; margin-bottom: 1rem;">Private Counsel</p>
+  <p class="hero-subtitle">For those carrying command responsibility</p>
+  <p class="hero-desc">We examine how core relationships are influencing judgement in live decision environments.</p>
+
+</section>
+
+<!-- PHILOSOPHY -->
+<section class="section" id="philosophy">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-numeral">I</span>
+      <div>
+        <h2 class="section-title">Philosophy</h2>
+      </div>
+    </div>
+    <div class="section-divider reveal"></div>
+    <p class="body-text reveal">Leadership is visible. Command is not.</p>
+    <p class="body-text reveal">Decisions are shaped long before consequence becomes public. We provide a private environment to test conviction, examine distortion and strengthen decision architecture.</p>
+    <p class="body-text reveal">The work remains confidential and contained.</p>
+  </div>
+</section>
+
+<!-- POSITION -->
+<section class="section" id="position">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-numeral">II</span>
+      <div>
+        <h2 class="section-title">Position</h2>
+      </div>
+    </div>
+    <div class="section-divider reveal"></div>
+    <div class="position-grid">
+      <div>
+        <p class="body-text reveal">We provide private counsel in live decision environments. We examine how relational forces are shaping judgement as decisions are formed.</p>
+      </div>
+      <div>
+        <ul class="negations reveal">
+          <li>We are not consultants</li>
+          <li>We do not deliver strategy decks</li>
+          <li>We do not provide executive coaching</li>
+          <li>We do not issue written reports</li>
+          <li>We do not publicise our work</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- THE ENGINE -->
+<section class="section" id="engine">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-numeral">III</span>
+      <div>
+        <h2 class="section-title">The Engine</h2>
+      </div>
+    </div>
+    <div class="section-divider reveal"></div>
+    <p class="engine-quote reveal">Distortion occurs during formulation. We surface it while it remains adjustable.</p>
+    <p class="body-text reveal">Our work is grounded in a doctoral framework examining how core relationships influence executive performance in real time. We observe proximity, loyalty, expectation and scrutiny while decisions are being shaped.</p>
+  </div>
+</section>
+
+<!-- STRUCTURE -->
+<section class="section" id="structure">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-numeral">IV</span>
+      <div>
+        <h2 class="section-title">Structure</h2>
+      </div>
+    </div>
+    <div class="section-divider reveal"></div>
+    <div class="structure-items">
+      <div class="structure-item reveal">
+        <span class="item-dot"></span>
+        <span class="item-text">Annual engagement</span>
+      </div>
+      <div class="structure-item reveal">
+        <span class="item-dot"></span>
+        <span class="item-text">Limited capacity</span>
+      </div>
+      <div class="structure-item reveal">
+        <span class="item-dot"></span>
+        <span class="item-text">Direct access</span>
+      </div>
+      <div class="structure-item reveal">
+        <span class="item-dot"></span>
+        <span class="item-text">Quarterly closed sessions</span>
+      </div>
+      <div class="structure-item reveal">
+        <span class="item-dot"></span>
+        <span class="item-text">Interim private consultation when required</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ENTRY -->
+<section class="section" id="entry">
+  <div class="section-inner">
+    <div class="entry-inner">
+      <div class="section-header reveal" style="justify-content:center; text-align:center; flex-direction:column; gap:0.75rem;">
+        <h2 class="section-title" style="font-size: clamp(0.7rem, 1.5vw, 0.9rem); letter-spacing: 0.4em; font-family: 'Cinzel', serif; color: var(--gold); font-weight:400;">Entry</h2>
+      </div>
+      <h2 class="entry-title reveal">Engagement is<br>by introduction.</h2>
+      <p class="entry-sub reveal">Private counsel · Limited capacity</p>
+      <a class="entry-email reveal" href="mailto:info@thecaptainstable.ie">Contact Us</a>
+      <div class="entry-ornament reveal">
+        <div class="ornament-line"></div>
+        <div class="ornament-diamond"></div>
+        <div class="ornament-line"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span>The Captain's Table</span>
+  <span>Private Counsel · Ireland</span>
+  <span>By Introduction Only</span>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, 80 * (Array.from(e
